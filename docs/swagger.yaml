@@ -1,4 +1,209 @@
+basePath: /
+definitions:
+  ApiCodeResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  ApiResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/ApiCodeResponse'
+      message:
+        type: string
+    type: object
+  CarObject:
+    properties:
+      id:
+        type: string
+      mark:
+        example: Lada
+        type: string
+      model:
+        example: Vesta
+        type: string
+      owner_name:
+        type: string
+      owner_patronymic:
+        type: string
+      owner_surname:
+        type: string
+      reg_num:
+        example: X123XX150
+        type: string
+      year:
+        example: 2002
+        type: integer
+    type: object
+  RegisterRequest:
+    properties:
+      regNums:
+        items:
+          type: string
+        type: array
+    type: object
 info:
   contact: {}
-paths: {}
+  title: Effmob API
+  version: "1.0"
+paths:
+  /v1/cars:
+    get:
+      description: Retrieve a list of cars based on provided queries
+      operationId: get-cars
+      parameters:
+      - description: Registration number of the car
+        in: query
+        name: reg_num
+        type: string
+      - description: Car manufacturer mark
+        in: query
+        name: mark
+        type: string
+      - description: Car model
+        in: query
+        name: model
+        type: string
+      - description: Car manufacturing year
+        in: query
+        name: year
+        type: string
+      - description: Owner's name
+        in: query
+        name: owner_name
+        type: string
+      - description: Owner's surname
+        in: query
+        name: owner_surname
+        type: string
+      - description: Owner's patronymic
+        in: query
+        name: owner_patronymic
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        "500":
+          description: Internal Server Error
+      summary: Get cars
+      tags:
+      - Car
+  /v1/cars/:
+    post:
+      consumes:
+      - application/json
+      description: Register multiple cars by fetching their information from an external
+        API
+      operationId: register-cars
+      parameters:
+      - description: Request body
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+      summary: Register cars
+      tags:
+      - Car
+  /v1/cars/{id}:
+    delete:
+      description: Deletes car by id
+      operationId: delete-car
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+      summary: Delete car
+      tags:
+      - Car
+    patch:
+      consumes:
+      - application/json
+      description: Changes one or several car fields
+      operationId: update-car
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Car object to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CarObject'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/ApiResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/ApiCodeResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/ApiResponse'
+            - properties:
+                error:
+                  $ref: '#/definitions/ApiCodeResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+      summary: Update Car Info
+      tags:
+      - Car
 swagger: "2.0"

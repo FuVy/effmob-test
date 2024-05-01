@@ -1,7 +1,322 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "title": "Effmob API",
+        "contact": {},
+        "version": "1.0"
     },
-    "paths": {}
+    "basePath": "/",
+    "paths": {
+        "/v1/cars": {
+            "get": {
+                "description": "Retrieve a list of cars based on provided queries",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car"
+                ],
+                "summary": "Get cars",
+                "operationId": "get-cars",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Registration number of the car",
+                        "name": "reg_num",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Car manufacturer mark",
+                        "name": "mark",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Car model",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Car manufacturing year",
+                        "name": "year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Owner's name",
+                        "name": "owner_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Owner's surname",
+                        "name": "owner_surname",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Owner's patronymic",
+                        "name": "owner_patronymic",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/cars/": {
+            "post": {
+                "description": "Register multiple cars by fetching their information from an external API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car"
+                ],
+                "summary": "Register cars",
+                "operationId": "register-cars",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/v1/cars/{id}": {
+            "delete": {
+                "description": "Deletes car by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car"
+                ],
+                "summary": "Delete car",
+                "operationId": "delete-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Changes one or several car fields",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Car"
+                ],
+                "summary": "Update Car Info",
+                "operationId": "update-car",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Car object to update",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CarObject"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/ApiCodeResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ApiResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/definitions/ApiCodeResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ApiCodeResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "ApiResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/ApiCodeResponse"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "CarObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "mark": {
+                    "type": "string",
+                    "example": "Lada"
+                },
+                "model": {
+                    "type": "string",
+                    "example": "Vesta"
+                },
+                "owner_name": {
+                    "type": "string"
+                },
+                "owner_patronymic": {
+                    "type": "string"
+                },
+                "owner_surname": {
+                    "type": "string"
+                },
+                "reg_num": {
+                    "type": "string",
+                    "example": "X123XX150"
+                },
+                "year": {
+                    "type": "integer",
+                    "example": 2002
+                }
+            }
+        },
+        "RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "regNums": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
 }

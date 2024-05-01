@@ -18,7 +18,7 @@ type CodeResponse struct {
 } // @name ApiCodeResponse
 
 func badRequest(ctx *fiber.Ctx, code int, message string) error {
-	ctx.Response().SetStatusCode(http.StatusOK)
+	ctx.Response().SetStatusCode(http.StatusBadRequest)
 	return ctx.JSON(messageResponse{
 		Error: &CodeResponse{
 			Code:    code,
@@ -48,14 +48,14 @@ func respondJSON(ctx *fiber.Ctx, statusCode int, msg, errMsg string, data interf
 	return ctx.JSON(resp)
 }
 
-func writeApiError(ctx *fiber.Ctx, codeResponse *CodeResponse) error {
-	ctx.Response().SetStatusCode(http.StatusBadRequest)
+func writeApiError(ctx *fiber.Ctx, statusCode int, codeResponse *CodeResponse) error {
+	ctx.Response().SetStatusCode(statusCode)
 	return ctx.JSON(*codeResponse)
 }
 
 func writeInvalidRequest(ctx *fiber.Ctx) error {
 	ctx.Response().SetStatusCode(http.StatusUnprocessableEntity)
-	return ctx.SendString(("can't parse json body"))
+	return ctx.SendString("can't parse json body")
 }
 
 func internalError(ctx *fiber.Ctx, err error) error {

@@ -13,6 +13,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// @title Effmob API
+// @version 1.0
+// @BasePath /
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -24,7 +27,7 @@ func main() {
 		log.WithError(err).Fatal("failed to connect to database")
 	}
 	address := env.StringWithDefault("ADDRESS", ":8080")
-	someapiUrl := env.GetAsURLOrPanicOnEmpty("SOMEAPI_ADDRESS")
+	someapiUrl := env.GetOrPanicOnEmpty("SOMEAPI_ADDRESS")
 	someapi.SetUrl(someapiUrl)
 	dbConn, err := db.DB()
 	if err != nil {

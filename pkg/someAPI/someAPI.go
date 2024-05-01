@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 
 	"github.com/fuvy/effmob-test/internal/storage"
 	"github.com/google/uuid"
@@ -27,22 +28,30 @@ type CarResponse struct {
 	Owner  Person `json:"owner"`
 }
 
+type CarErr struct {
+	RegNum string
+	Error  error
+}
+
 func SetUrl(url string) {
 	apiUrl = url
 }
 
-func GetCarInfo(regNum string) (*CarResponse, error) {
+func GetCarInfo(regNum string, wg *sync.WaitGroup, ch chan *CarResponse, chErr chan *CarErr) {
+	defer wg.Done()
 	queryParam := url.Values{}
 	queryParam.Add("regNum", regNum)
 	urlWithParams := apiUrl + "/info?" + queryParam.Encode()
 	req, err := http.NewRequest("GET", urlWithParams, nil)
 	if err != nil {
-		return nil, fmt.Errorf("creting car info request: %w", err)
+		chErr <- &CarErr{regNum, fmt.Errorf("creting car info request: %w", err)}
+		return
 	}
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode != 200 {
-		return nil, fmt.Errorf("sending car info request: %w", err)
+		chErr <- &CarErr{regNum, fmt.Errorf("sending car info request: %v", err)}
+		return
 	}
 	defer resp.Body.Close()
 
@@ -50,13 +59,15 @@ func GetCarInfo(regNum string) (*CarResponse, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("car info reading body: %w", err)
+		chErr <- &CarErr{regNum, fmt.Errorf("car info reading body: %w", err)}
+		return
 	}
 	err = json.Unmarshal(body, carData)
 	if err != nil {
-		return nil, fmt.Errorf("parsing car info: %w", err)
+		chErr <- &CarErr{regNum, fmt.Errorf("parsing car info: %w", err)}
+		return
 	}
-	return carData, nil
+	ch <- carData
 }
 
 func (resp *CarResponse) ToCarData() (*storage.Car, error) {
